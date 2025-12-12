@@ -28,6 +28,15 @@
         </div>
 
         <div id="zones-container">
+            <strong>Exploration Settings</strong>
+            <div id="difficulty-select" class="zone-item">
+                <label for="game-difficulty">Difficulty:</label>
+                <select id="game-difficulty" onchange="set_difficulty(this.value)">
+                    <option value="Normal">Normal</option>
+                    <option value="Hard">Hard (x1.5 Attack)</option>
+                    <option value="Brutal">Brutal (x2 Attack, x0.5 Gold)</option>
+                </select>
+            </div>
             <strong>Exploration Zones</strong>
             <div id="zone-buttons" class="zone-item">
                 <button onclick="set_zone(0)">Forest (Lvl 1+)</button>

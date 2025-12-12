@@ -7,17 +7,17 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 5px; /* Minimal padding */
+    padding: 2px; /* Reduced padding */
     margin: 0;
-    height: 100vh; /* Ensure body takes full viewport height */
-    overflow-y: hidden; /* Crucial: prevent body scrolling */
+    height: 100vh;
+    overflow-y: hidden; 
 }
 #game-container {
     width: 100%;
-    height: 100%; /* Take up remaining viewport height */
+    height: 100%;
     max-width: 800px;
     border: 2px solid #3498db;
-    padding: 5px; /* Minimal padding */
+    padding: 3px; /* Reduced padding */
     background-color: #34495e;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     box-sizing: border-box; 
@@ -26,14 +26,14 @@ body {
 }
 h1 {
     font-size: 1.2em;
-    margin: 5px 0;
+    margin: 2px 0; /* Reduced margin */
 }
 
 /* --- STATS BAR (Condensed) --- */
 #stats-bar {
     background-color: #2980b9;
-    padding: 4px;
-    margin-bottom: 5px;
+    padding: 3px; /* Reduced padding */
+    margin-bottom: 3px; /* Reduced margin */
     border-radius: 3px;
     display: flex;
     flex-wrap: wrap; 
@@ -41,34 +41,34 @@ h1 {
     font-size: 0.8em;
 }
 #stats-bar span {
-    padding: 2px 3px;
+    padding: 1px 3px; /* Reduced vertical padding */
 }
 
 /* --- NEW HP BAR STYLES --- */
-#hp-bar-container { /* NEW: Container for the bar */
-    height: 10px;
-    background-color: #e74c3c; /* Red background (empty health) */
+#hp-bar-container { 
+    height: 8px; /* Slightly reduced height */
+    background-color: #e74c3c; 
     border: 1px solid #c0392b;
-    margin-top: 5px;
-    margin-bottom: 5px;
+    margin-top: 3px;
+    margin-bottom: 3px;
     border-radius: 3px;
     overflow: hidden;
 }
-#player-hp-bar { /* NEW: The actual moving green bar */
+#player-hp-bar { 
     height: 100%;
-    width: 100%; /* Default 100% full */
-    background-color: #2ecc71; /* Green (full health) */
-    transition: width 0.3s ease-out; /* Smooth transition on HP change */
+    width: 100%; 
+    background-color: #2ecc71; 
+    transition: width 0.3s ease-out;
 }
-.low-hp #player-hp-bar { /* Optional: Flash red if below 25% */
+.low-hp #player-hp-bar { 
     background-color: #e67e22; 
 }
 
 
 /* --- MESSAGES & INVENTORY --- */
 #inventory-display {
-    padding: 4px;
-    margin-bottom: 5px;
+    padding: 3px; /* Reduced padding */
+    margin-bottom: 3px; /* Reduced margin */
     font-size: 0.8em;
     border: 1px dashed #3498db;
 }
@@ -78,13 +78,13 @@ h1 {
     min-height: 50px; 
     max-height: 100px; 
     overflow-y: scroll; 
-    padding: 4px;
-    margin-bottom: 5px;
+    padding: 3px; /* Reduced padding */
+    margin-bottom: 3px; /* Reduced margin */
     font-size: 0.75em; 
     color: #95a5a6;
 }
 
-.message { margin-bottom: 2px; }
+.message { margin-bottom: 1px; } /* Reduced spacing between messages */
 
 /* --- RESTORED TEXT COLORS --- */
 .system { color: #2ecc71; } 
@@ -94,21 +94,25 @@ h1 {
 
 /* --- SHOP & ZONES (Condensed) --- */
 #shop-container, #zones-container {
-    padding: 4px;
-    margin-bottom: 5px;
+    padding: 3px; /* Reduced padding */
+    margin-bottom: 3px; /* Reduced margin */
     font-size: 0.8em;
+}
+#shop-container strong, #zones-container strong {
+    display: block;
+    margin-bottom: 1px; /* Reduced spacing below headers */
 }
 .shop-item, .zone-item {
     flex-direction: column;
     align-items: stretch;
-    margin-bottom: 3px;
+    margin-bottom: 2px; /* Reduced spacing between items */
 }
 .shop-item span, #zones-container strong {
-    margin-bottom: 2px;
+    margin-bottom: 1px; /* Reduced vertical spacing */
 }
 .shop-item button, .zone-item button {
-    padding: 5px;
-    margin: 2px 0;
+    padding: 3px; /* Reduced button padding */
+    margin: 1px 0; /* Reduced button margin */
     width: 100%;
 }
 
@@ -117,11 +121,11 @@ h1 {
     flex-shrink: 0; 
     display: grid;
     grid-template-columns: repeat(3, 1fr); 
-    gap: 4px;
-    margin-top: 5px;
+    gap: 3px; /* Reduced gap */
+    margin-top: 3px; /* Reduced margin */
 }
 #actions button {
-    padding: 8px 5px;
+    padding: 5px 5px; /* Reduced button padding */
     margin: 0;
     font-size: 0.8em;
 }

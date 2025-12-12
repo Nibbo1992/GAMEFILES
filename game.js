@@ -3,9 +3,10 @@ const STORAGE_KEY = 'glimmeringDungeonSave';
 // --- GAME DATA ---
 let currentUpgradePrice = 50;
 let currentZoneIndex = 0;
-        
+let currentDifficulty = 'Normal'; 
+
 let player = {
-    name: "Adventurer",
+    name: "Adventurer", 
     hp: 100,
     maxHp: 100,
     attack: 15,
@@ -20,16 +21,31 @@ let player = {
     }
 };
 
+// NEW: DIFFICULTY SETTINGS
+const difficultySettings = {
+    'Normal': { attackMultiplier: 1.0, goldMultiplier: 1.0 },
+    'Hard': { attackMultiplier: 1.5, goldMultiplier: 1.0 },
+    'Brutal': { attackMultiplier: 2.0, goldMultiplier: 0.5 }
+};
+
 const zones = [ 
     { name: "Forest Glade", minLevel: 1, monsterMultiplier: 1.0 },
     { name: "Murky Swamp", minLevel: 5, monsterMultiplier: 1.5 },
     { name: "Volcanic Peak", minLevel: 10, monsterMultiplier: 2.0 }
 ];
 
+// MODIFIED: Added 3 new monsters
 const monsters = [
     { name: "Slime", hp: 30, attack: 5, xpDrop: 20, goldDrop: [1, 5], statusChance: { type: 'poison', chance: 0.1, duration: 2, damage: 3 } },
     { name: "Goblin", hp: 50, attack: 10, xpDrop: 40, goldDrop: [5, 12], statusChance: null },
-    { name: "Ogre", hp: 80, attack: 15, xpDrop: 70, goldDrop: [10, 25], statusChance: { type: 'stun', chance: 0.2, duration: 1 } }
+    { name: "Ogre", hp: 80, attack: 15, xpDrop: 70, goldDrop: [10, 25], statusChance: { type: 'stun', chance: 0.2, duration: 1 } },
+    
+    // NEW MONSTERS START HERE
+    { name: "Skeleton Archer", hp: 40, attack: 18, xpDrop: 50, goldDrop: [8, 18], statusChance: { type: 'poison', chance: 0.3, duration: 3, damage: 3 } },
+    { name: "Stone Golem", hp: 150, attack: 8, xpDrop: 90, goldDrop: [15, 30], statusChance: { type: 'stun', chance: 0.15, duration: 1 } },
+    // Regeneration will be handled in the combat loop (window.attack)
+    { name: "Cave Troll", hp: 100, attack: 12, xpDrop: 120, goldDrop: [20, 40], statusChance: null, special: 'regenerate' }
+    // NEW MONSTERS END HERE
 ];
 
 let currentEnemy = null;
@@ -50,6 +66,7 @@ const upgradePriceSpan = document.getElementById('upgrade-price');
 const playerStatusSpan = document.getElementById('player-status');
 const playerHpBar = document.getElementById('player-hp-bar');
 const hpBarContainer = document.getElementById('hp-bar-container');
+const difficultySelect = document.getElementById('game-difficulty');
 
 
 // --- UTILITY FUNCTIONS ---
@@ -100,6 +117,12 @@ function update_ui() {
     }
     inventoryItemsSpan.textContent = inventoryText || 'Empty';
     upgradePriceSpan.textContent = currentUpgradePrice;
+    
+    // NEW: Update difficulty selector state
+    if (difficultySelect) {
+        difficultySelect.value = currentDifficulty;
+        difficultySelect.disabled = isFighting;
+    }
 
     const notFighting = !isFighting;
     startBtn.disabled = isFighting;
@@ -122,7 +145,9 @@ window.save_game = function() {
         const saveData = JSON.stringify({
             player: player,
             upgradePrice: currentUpgradePrice,
-            zoneIndex: currentZoneIndex
+            zoneIndex: currentZoneIndex,
+            // NEW: Save difficulty
+            difficulty: currentDifficulty 
         });
         localStorage.setItem(STORAGE_KEY, saveData);
         log("Game saved successfully!", 'system');
@@ -143,18 +168,33 @@ window.load_game = function() {
         player = data.player; 
         currentUpgradePrice = data.upgradePrice;
         currentZoneIndex = data.zoneIndex;
+        // NEW: Load difficulty, default to 'Normal' if missing (for old saves)
+        currentDifficulty = data.difficulty || 'Normal'; 
 
         isFighting = false;
         currentEnemy = null;
         
-        log(`Game loaded. Welcome back to the ${zones[currentZoneIndex].name}!`, 'system');
+        log(`Game loaded. Welcome back to the ${zones[currentZoneIndex].name}! Difficulty: ${currentDifficulty}`, 'system');
         update_ui();
     } catch (e) {
         log("Error loading game data.", 'combat');
     }
 }
 
-// --- ZONE LOGIC ---
+// --- GAME SETTINGS LOGIC ---
+
+// NEW FUNCTION: Set Difficulty
+window.set_difficulty = function(newDifficulty) {
+    if (isFighting) {
+        log("You cannot change difficulty during combat!", 'combat');
+        return;
+    }
+    if (currentDifficulty !== newDifficulty) {
+        currentDifficulty = newDifficulty;
+        log(`Difficulty set to: ${currentDifficulty}. This will affect future encounters.`, 'info');
+    }
+    update_ui();
+}
 
 window.set_zone = function(index) {
     if (isFighting) {
@@ -180,9 +220,9 @@ function apply_status_effects() {
     }
 
     if (player.hp <= 0) {
-        log("💀 Poison took your life! Game Over. 💀", 'combat');
+        log("💀 Poison took your life! Game Over. 💀", 'combat");
         isFighting = false;
-        update_ui();
+        update_ui(); 
         return false;
     }
 
@@ -212,11 +252,21 @@ function encounter_monster() {
     const baseMonster = monsters[monsterIndex];
     currentEnemy = JSON.parse(JSON.stringify(baseMonster));
     
+    // Track max HP for regeneration
+    currentEnemy.maxHp = currentEnemy.hp; 
+    
     const levelFactor = player.level - 1;
     const zoneMultiplier = zones[currentZoneIndex].monsterMultiplier;
+    
+    // NEW: Apply difficulty attack multiplier
+    const difficultyMultiplier = difficultySettings[currentDifficulty].attackMultiplier;
 
+    // Apply scaling
     currentEnemy.hp = Math.round((currentEnemy.hp + levelFactor * 15) * zoneMultiplier);
-    currentEnemy.attack = Math.round((currentEnemy.attack + levelFactor * 5) * zoneMultiplier);
+    currentEnemy.attack = Math.round((currentEnemy.attack + levelFactor * 5) * zoneMultiplier * difficultyMultiplier);
+    
+    // Update max HP after scaling
+    currentEnemy.maxHp = currentEnemy.hp; 
 
     isFighting = true;
     log(`A hostile ${currentEnemy.name} appears in the ${zones[currentZoneIndex].name}! (HP: ${currentEnemy.hp})`, 'combat');
@@ -255,6 +305,14 @@ window.attack = function() {
     player.hp -= enemyDamage;
     log(`The ${currentEnemy.name} hits you for ${enemyDamage} damage. (${currentEnemy.name} HP: ${currentEnemy.hp})`, 'combat');
     monster_applies_status(); 
+    
+    // NEW: Troll Regeneration Logic
+    if (currentEnemy.special === 'regenerate') {
+        const healAmount = Math.round(currentEnemy.maxHp * 0.05); // Heals 5% of max HP per turn
+        currentEnemy.hp = Math.min(currentEnemy.maxHp, currentEnemy.hp + healAmount);
+        log(`The ${currentEnemy.name} regenerates ${healAmount} HP!`, 'status');
+    }
+    
     update_ui();
 
     if (player.hp <= 0) {
@@ -298,9 +356,14 @@ window.flee = function() {
 
 function drop_loot() {
     const [minGold, maxGold] = currentEnemy.goldDrop;
-    const goldFound = getRandomInt(minGold, maxGold);
-    player.gold += goldFound;
-    log(`You find ${goldFound} gold pieces!`, 'system');
+    const baseGoldFound = getRandomInt(minGold, maxGold);
+    
+    // NEW: Apply difficulty gold multiplier
+    const goldMultiplier = difficultySettings[currentDifficulty].goldMultiplier;
+    const finalGold = Math.round(baseGoldFound * goldMultiplier);
+    
+    player.gold += finalGold;
+    log(`You find ${finalGold} gold pieces!`, 'system');
 
     if (Math.random() < 0.1) {
         player.inventory['Healing Potion']++;
@@ -320,6 +383,12 @@ window.use_potion = function() {
 
     const healAmount = player.maxHp * 0.4;
     const oldHp = player.hp;
+    
+    if (player.hp === player.maxHp) {
+        log("Your health is already full!", 'info');
+        return;
+    }
+    
     player.hp = Math.min(player.maxHp, player.hp + healAmount);
     
     const actualHealed = player.hp - oldHp;
@@ -375,6 +444,7 @@ function check_xp() {
 
 window.start_game = function() {
     // Reset all stats to starting values
+    player.name = "Adventurer"; 
     player.hp = player.maxHp = 100;
     player.attack = 15;
     player.level = 1;
@@ -385,6 +455,7 @@ window.start_game = function() {
     player.status = { poison: 0, stun: 0 };
     currentUpgradePrice = 50;
     currentZoneIndex = 0;
+    currentDifficulty = 'Normal'; // NEW: Reset difficulty on new game
 
     isFighting = false;
     currentEnemy = null;
@@ -392,13 +463,18 @@ window.start_game = function() {
     messageBox.innerHTML = ''; 
 
     log("A fresh adventure begins!", 'system');
-    log("You are in the Forest Glade. Check out the zones and press 'Explore'!", 'system');
+    log(`Current Difficulty: ${currentDifficulty}. Press 'Explore' to find a monster!`, 'system');
     
     update_ui();
 }
 
 // Ensure initial UI update and check for saved game only after the entire page is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // NEW: Set initial difficulty state if the element exists
+    if (difficultySelect) {
+        currentDifficulty = difficultySelect.value;
+    }
+    
     update_ui();
     if (localStorage.getItem(STORAGE_KEY)) {
         log("A saved game exists. Press 'LOAD GAME' to continue.", 'info');
