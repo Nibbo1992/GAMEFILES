@@ -1,3 +1,5 @@
+/* --- BASE STYLES (Mobile-first foundation) --- */
+
 body {
     font-family: 'Courier New', monospace;
     background-color: #2c3e50;
@@ -5,83 +7,104 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding: 10px; /* Reduced padding for mobile */
+    margin: 0;
 }
 #game-container {
-    width: 90%;
+    width: 100%; /* Full width on small screens */
     max-width: 800px;
     border: 2px solid #3498db;
-    padding: 15px;
+    padding: 10px; /* Reduced padding */
     background-color: #34495e;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box; /* Include padding in width calculation */
 }
+h1 {
+    font-size: 1.5em; /* Smaller title */
+    margin-top: 5px;
+}
+
+/* --- STATS BAR --- */
 #stats-bar {
     background-color: #2980b9;
-    padding: 10px;
-    margin-bottom: 15px;
+    padding: 8px; /* Slightly smaller padding */
+    margin-bottom: 10px;
     border-radius: 5px;
     display: flex;
-    justify-content: space-around;
+    flex-wrap: wrap; /* Allows stats to wrap on smaller screens */
+    justify-content: space-between; /* Distribute space evenly */
+    font-size: 0.9em;
 }
-#message-box {
-    height: 200px;
-    overflow-y: scroll;
-    background-color: #2c3e50;
-    border: 1px solid #3498db;
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 5px;
-    line-height: 1.4;
-    color: #95a5a6;
+#stats-bar span {
+    padding: 2px 5px;
 }
-.message { margin-bottom: 5px; }
-.info { color: #f1c40f; }
-.combat { color: #e74c3c; }
-.system { color: #2ecc71; }
-.status { color: #8e44ad; font-weight: bold; } 
 
-/* SHOP & ZONES */
+/* --- MESSAGES & INVENTORY --- */
+#message-box {
+    height: 150px; /* Shorter message box on mobile */
+    padding: 8px;
+    margin-bottom: 10px;
+    font-size: 0.85em;
+}
+#inventory-display {
+    padding: 8px;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+}
+
+/* --- SHOP & ZONES --- */
 #shop-container, #zones-container {
-    border: 1px dashed #e67e22;
-    padding: 10px;
-    margin-bottom: 15px;
-    background-color: #2c3e50;
+    padding: 8px;
+    margin-bottom: 10px;
 }
 .shop-item, .zone-item {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 5px;
-    align-items: center;
+    flex-direction: column; /* Stack items vertically */
+    align-items: stretch; /* Stretch buttons to full width */
+    margin-bottom: 10px;
 }
 .shop-item button, .zone-item button {
-    padding: 5px 10px;
-    margin-left: 10px;
-    background-color: #e67e22;
-}
-.shop-item button:hover, .zone-item button:hover {
-    background-color: #d35400;
+    padding: 8px;
+    margin-top: 5px; /* Add space between text and button */
+    width: 100%;
 }
 
-#inventory-display {
-    padding: 10px;
-    border: 1px dashed #3498db;
-    margin-bottom: 15px;
-    text-align: left;
-}
+/* --- ACTIONS (Buttons) --- */
 #actions {
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
+    display: grid;
+    /* Create a grid with two columns for better button tapping on mobile */
+    grid-template-columns: 1fr 1fr; 
+    gap: 8px;
 }
-button {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-    margin: 5px;
+#actions button {
+    padding: 12px 10px; /* Larger tap target */
+    margin: 0;
+    font-size: 1em;
 }
-button:hover { background-color: #2980b9; }
-button:disabled { background-color: #7f8c8d; cursor: not-allowed; }
+
+/* --- MEDIA QUERY for DESKTOP/LARGER SCREENS --- */
+/* Restore multi-column layout when screen is wider than 600px */
+@media (min-width: 600px) {
+    #game-container {
+        padding: 15px;
+    }
+    #stats-bar {
+        flex-wrap: nowrap; /* Prevent wrapping on desktop */
+        justify-content: space-around;
+        font-size: 1em;
+    }
+    #message-box {
+        height: 200px; /* Taller message box on desktop */
+    }
+    .shop-item, .zone-item {
+        flex-direction: row; /* Restore horizontal layout */
+        align-items: center;
+    }
+    #actions {
+        /* Restore flex layout or keep grid (adjusting to 3 columns is often better) */
+        grid-template-columns: repeat(6, 1fr); 
+        gap: 10px;
+    }
+    #actions button {
+        padding: 10px 15px;
+    }
+}
