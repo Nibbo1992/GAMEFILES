@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>The Glimmering Dungeon (Modular)</title>
+    <link rel="stylesheet" href="style.css"> 
+</head>
+<body>
+
+    <div id="game-container">
+        <h1>The Glimmering Dungeon V5 (Modular)</h1>
+
+        <div id="stats-bar">
+            <span id="player-name"></span> |
+            <span id="player-hp"></span> |
+            <span id="player-level"></span> |
+            <span id="player-xp"></span> |
+            <span id="player-gold"></span>
+        </div>
+        
+        <div id="inventory-display">
+            <strong>Inventory:</strong> <span id="inventory-items"></span>
+            <span id="player-status"></span>
+        </div>
+
+        <div id="zones-container">
+            <strong>Exploration Zones</strong>
+            <div id="zone-buttons" class="zone-item">
+                <button onclick="set_zone(0)">Forest (Lvl 1+)</button>
+                <button onclick="set_zone(1)">Swamp (Lvl 5+)</button>
+                <button onclick="set_zone(2)">Volcano (Lvl 10+)</button>
+            </div>
+        </div>
+
+        <div id="shop-container">
+            <strong>Tavern Trader</strong>
+            <div class="shop-item">
+                <span>Healing Potion (+40% HP) - 20 Gold</span>
+                <button onclick="buy_item('Healing Potion', 20)">Buy Potion</button>
+            </div>
+            <div class="shop-item">
+                <span>Sword Upgrade (+5 Attack) - <span id="upgrade-price">50</span> Gold</span>
+                <button onclick="buy_item('Sword Upgrade', currentUpgradePrice)">Upgrade Sword</button>
+            </div>
+        </div>
+
+        <div id="message-box">
+            <div class="message system">Welcome! Click START GAME or LOAD GAME to begin.</div>
+        </div>
+
+        <div id="actions">
+            <button id="start-btn" onclick="start_game()">NEW GAME</button>
+            <button id="load-btn" onclick="load_game()">LOAD GAME</button>
+            <button id="save-btn" onclick="save_game()" disabled>SAVE GAME</button>
+            <button id="explore-btn" onclick="explore()" disabled>Explore</button>
+            <button id="attack-btn" onclick="attack()" disabled>Attack</button>
+            <button id="flee-btn" onclick="flee()" disabled>Flee</button>
+            <button id="use-potion-btn" onclick="use_potion()" disabled>Use Potion</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script> 
+</body>
+</html>
