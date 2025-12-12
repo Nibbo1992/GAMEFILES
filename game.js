@@ -35,7 +35,8 @@ const monsters = [
 let currentEnemy = null;
 let isFighting = false;
 
-// --- UI ELEMENTS ---
+// --- UI ELEMENTS REFERENCES ---
+// Elements are guaranteed to exist because the script runs after DOMContentLoaded
 const messageBox = document.getElementById('message-box');
 const startBtn = document.getElementById('start-btn');
 const loadBtn = document.getElementById('load-btn');
@@ -47,6 +48,9 @@ const usePotionBtn = document.getElementById('use-potion-btn');
 const inventoryItemsSpan = document.getElementById('inventory-items');
 const upgradePriceSpan = document.getElementById('upgrade-price');
 const playerStatusSpan = document.getElementById('player-status');
+const playerHpBar = document.getElementById('player-hp-bar');
+const hpBarContainer = document.getElementById('hp-bar-container');
+
 
 // --- UTILITY FUNCTIONS ---
 function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
@@ -61,17 +65,35 @@ function log(message, type = 'system') {
 }
 
 function update_ui() {
+    // --- STATS UPDATE ---
     document.getElementById('player-name').textContent = player.name;
     document.getElementById('player-hp').textContent = `HP: ${player.hp}/${player.maxHp}`;
     document.getElementById('player-level').textContent = `Level: ${player.level}`;
     document.getElementById('player-xp').textContent = `XP: ${player.xp}/${player.xpToNextLevel}`;
     document.getElementById('player-gold').textContent = `Gold: ${player.gold} 💰`;
 
+    // --- HP BAR VISUAL FEEDBACK FIX ---
+    const hpPercent = (player.hp / player.maxHp) * 100;
+    
+    // Check if the HP bar element exists before trying to modify its style
+    if (playerHpBar) {
+        playerHpBar.style.width = `${hpPercent}%`;
+
+        // Toggle 'low-hp' class for visual alert
+        if (hpPercent < 25) {
+            hpBarContainer.classList.add('low-hp');
+        } else {
+            hpBarContainer.classList.remove('low-hp');
+        }
+    }
+
+    // --- STATUS DISPLAY ---
     let statusText = '';
     if (player.status.poison > 0) statusText += ` | 🧪 Poison (${player.status.poison}t)`;
     if (player.status.stun > 0) statusText += ` | 😵 Stunned (${player.status.stun}t)`;
     playerStatusSpan.textContent = statusText;
 
+    // --- GENERAL UI UPDATE ---
     let inventoryText = '';
     for (const item in player.inventory) {
         if (player.inventory[item] > 0) inventoryText += `${item} (${player.inventory[item]}) `;
@@ -118,7 +140,6 @@ window.load_game = function() {
         }
         const data = JSON.parse(savedData);
         
-        // This is necessary to re-assign the entire complex object
         player = data.player; 
         currentUpgradePrice = data.upgradePrice;
         currentZoneIndex = data.zoneIndex;
@@ -145,7 +166,7 @@ window.set_zone = function(index) {
         return;
     }
     currentZoneIndex = index;
-    log(`You are now exploring the ${zones[currentZoneIndex].name}.`, 'system');
+    log(`You are now exploring the ${zones[currentZoneIndex].name}...`, 'system');
     update_ui();
 }
 
@@ -227,7 +248,6 @@ window.attack = function() {
         return;
     }
     
-    // Check if player died from status before monster attacks
     if (player.hp <= 0) return;
 
     // Enemy attacks
@@ -305,7 +325,6 @@ window.use_potion = function() {
     const actualHealed = player.hp - oldHp;
     player.inventory['Healing Potion']--;
 
-    // Clear status effects on heal
     player.status.poison = 0;
     log("Poison status cleared by healing!", 'system');
 
@@ -332,6 +351,7 @@ window.buy_item = function(item, price) {
 
     update_ui();
 }
+
 
 // --- INITIALIZATION ---
 
@@ -377,7 +397,7 @@ window.start_game = function() {
     update_ui();
 }
 
-// Logic to run when the game.js file is loaded
+// Ensure initial UI update and check for saved game only after the entire page is loaded
 document.addEventListener('DOMContentLoaded', () => {
     update_ui();
     if (localStorage.getItem(STORAGE_KEY)) {
