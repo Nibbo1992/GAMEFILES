@@ -21,30 +21,51 @@ body {
     background-color: #34495e;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     box-sizing: border-box; 
-    display: flex; /* Enable flex for inner layout */
+    display: flex; 
     flex-direction: column;
 }
 h1 {
-    font-size: 1.2em; /* Very small title */
-    margin: 5px 0; /* Minimal margin */
+    font-size: 1.2em;
+    margin: 5px 0;
 }
 
 /* --- STATS BAR (Condensed) --- */
 #stats-bar {
     background-color: #2980b9;
-    padding: 4px; /* Minimal padding */
+    padding: 4px;
     margin-bottom: 5px;
     border-radius: 3px;
     display: flex;
     flex-wrap: wrap; 
     justify-content: space-around;
-    font-size: 0.8em; /* Smaller font */
+    font-size: 0.8em;
 }
 #stats-bar span {
     padding: 2px 3px;
 }
 
-/* --- MESSAGES & INVENTORY (Minimal Height) --- */
+/* --- NEW HP BAR STYLES --- */
+#hp-bar-container { /* NEW: Container for the bar */
+    height: 10px;
+    background-color: #e74c3c; /* Red background (empty health) */
+    border: 1px solid #c0392b;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border-radius: 3px;
+    overflow: hidden;
+}
+#player-hp-bar { /* NEW: The actual moving green bar */
+    height: 100%;
+    width: 100%; /* Default 100% full */
+    background-color: #2ecc71; /* Green (full health) */
+    transition: width 0.3s ease-out; /* Smooth transition on HP change */
+}
+.low-hp #player-hp-bar { /* Optional: Flash red if below 25% */
+    background-color: #e67e22; 
+}
+
+
+/* --- MESSAGES & INVENTORY --- */
 #inventory-display {
     padding: 4px;
     margin-bottom: 5px;
@@ -53,43 +74,23 @@ h1 {
 }
 
 #message-box {
-    /* Critical adjustment: Give message box flexible space, but cap it small */
-    flex-grow: 1; /* Allows it to consume available space */
+    flex-grow: 1; 
     min-height: 50px; 
-    max-height: 100px; /* Force it to take less space */
+    max-height: 100px; 
     overflow-y: scroll; 
     padding: 4px;
     margin-bottom: 5px;
-    font-size: 0.75em; /* Smallest practical font size */
-    color: #95a5a6; /* Default text color in the box */
+    font-size: 0.75em; 
+    color: #95a5a6;
 }
 
 .message { margin-bottom: 2px; }
 
-/* ------------------------------------- */
-/* --- RESTORED TEXT COLORS (CRITICAL) --- */
-/* ------------------------------------- */
-
-/* System/Gain (Positive action, Level up, Start Game) */
-.system { 
-    color: #2ecc71; /* Bright Green */
-} 
-
-/* Info/Loot (Gold, Potions, General notices) */
-.info { 
-    color: #f1c40f; /* Yellow/Gold */
-} 
-
-/* Combat/Damage (Enemy attacks, Player Death, Errors) */
-.combat { 
-    color: #e74c3c; /* Red */
-} 
-
-/* Status (Poison, Stun) */
-.status { 
-    color: #9b59b6; /* Purple/Violet */
-    font-weight: bold; 
-} 
+/* --- RESTORED TEXT COLORS --- */
+.system { color: #2ecc71; } 
+.info { color: #f1c40f; } 
+.combat { color: #e74c3c; } 
+.status { color: #9b59b6; font-weight: bold; } 
 
 /* --- SHOP & ZONES (Condensed) --- */
 #shop-container, #zones-container {
@@ -106,30 +107,27 @@ h1 {
     margin-bottom: 2px;
 }
 .shop-item button, .zone-item button {
-    padding: 5px; /* Small buttons */
+    padding: 5px;
     margin: 2px 0;
     width: 100%;
 }
 
 /* --- ACTIONS (Buttons - Fixed Grid) --- */
 #actions {
-    /* Use fixed space to ensure buttons fit */
     flex-shrink: 0; 
     display: grid;
-    /* 3 columns to save vertical space, 2 rows */
     grid-template-columns: repeat(3, 1fr); 
     gap: 4px;
     margin-top: 5px;
 }
 #actions button {
-    padding: 8px 5px; /* Smallest practical button size */
+    padding: 8px 5px;
     margin: 0;
     font-size: 0.8em;
 }
 
 
 /* --- MEDIA QUERY for DESKTOP/LARGER SCREENS --- */
-/* Restore multi-column layout when screen is wider than 600px */
 @media (min-width: 600px) {
     body {
         height: auto;
@@ -155,19 +153,12 @@ h1 {
         max-height: none;
         font-size: 1em;
     }
-    .shop-item, .zone-item {
-        flex-direction: row;
-        align-items: center;
-    }
     #actions {
         grid-template-columns: repeat(6, 1fr); 
         gap: 10px;
     }
     #actions button {
         padding: 10px 15px;
-        font-size: 1em;
-    }
-    #inventory-display {
         font-size: 1em;
     }
 }
