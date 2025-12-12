@@ -61,9 +61,35 @@ h1 {
     padding: 4px;
     margin-bottom: 5px;
     font-size: 0.75em; /* Smallest practical font size */
+    color: #95a5a6; /* Default text color in the box */
 }
 
 .message { margin-bottom: 2px; }
+
+/* ------------------------------------- */
+/* --- RESTORED TEXT COLORS (CRITICAL) --- */
+/* ------------------------------------- */
+
+/* System/Gain (Positive action, Level up, Start Game) */
+.system { 
+    color: #2ecc71; /* Bright Green */
+} 
+
+/* Info/Loot (Gold, Potions, General notices) */
+.info { 
+    color: #f1c40f; /* Yellow/Gold */
+} 
+
+/* Combat/Damage (Enemy attacks, Player Death, Errors) */
+.combat { 
+    color: #e74c3c; /* Red */
+} 
+
+/* Status (Poison, Stun) */
+.status { 
+    color: #9b59b6; /* Purple/Violet */
+    font-weight: bold; 
+} 
 
 /* --- SHOP & ZONES (Condensed) --- */
 #shop-container, #zones-container {
